@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { IonButton, IonIcon, IonInput, IonItem, IonText, useIonRouter, useIonLoading, useIonAlert } from '@ionic/react';
 import { supabase } from 'apis/supabaseClient';
-import { at, chevronBackCircle, eyeOffOutline, eyeOutline, lockClosedOutline } from 'ionicons/icons';
+import { at, calendar, chevronBackCircle, eyeOffOutline, eyeOutline, lockClosedOutline, phonePortrait } from 'ionicons/icons';
 import SocialLoginButton from '../social-login-buttons/SocialLoginButton';
 import Separator from 'ui/components/generic/Separator';
 import { useAuthUserStore } from 'store/user';
@@ -21,6 +21,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ togglePasswordButtonType = 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [repeatedPassword, setRepeatedPassword] = useState<string>('');
+  const [fullname, setFullname] = useState<string>('');
+  const [phonenumber, setPhonenumber] = useState<string>('');
+  const [birthday, setBirthday] = useState<string>('dd/mm/yyyy');
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [passwordShown, setPasswordShown] = useState<boolean>(false);
   const [repeatedPasswordShown, setRepeatedPasswordShown] = useState<boolean>(false);
@@ -29,6 +32,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ togglePasswordButtonType = 
   const [emailValid, setEmailValid] = useState<boolean>(true);
   const [passwordValid, setPasswordValid] = useState<boolean>(true);
   const [repPasswordValid, setRepPasswordValid] = useState<boolean>(true);
+  const [nameValid, setNameValid] = useState<boolean>(true);
+  const [phoneValid, setPhoneValid] = useState<boolean>(true);
+  const [birthdayValid, setBirthdayValid] = useState<boolean>(true);
+  const [birthdayEntered, setBirthdayEntered] = useState<boolean>(true);
 
   useEffect(() => {
     const emailRegex =
@@ -36,22 +43,56 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ togglePasswordButtonType = 
     const emailCheck = emailRegex.test(email) && email !== '';
     const passwordCheck = password.length >= 8 && password !== '';
     const repPasswordCheck = password === repeatedPassword && repeatedPassword !== '';
+    //does not accept single quotes in fullname
+    const nameRegex =
+      /^(?![×÷])[A-Za-zÀ-ÿ]+ (?![×÷])[A-Za-zÀ-ÿ]+$/;
+    const nameCheck = nameRegex.test(fullname);
+    const phoneRegex =
+      /^(?:(?:00|\+)?45)?(?=2|3[01]|4[012]|4911|5[0-3]|6[01]|[78]1|9[123])\d{8}$/;
+    /* setPhonenumber(phonenumber.replace(/\s/g, ")); */
+    const phoneCheck = phoneRegex.test(phonenumber);
+
+    const todaysDate = new Date();
+    const today = new Date(
+      todaysDate.getFullYear()-18,
+      todaysDate.getMonth(),
+      todaysDate.getDay()
+    );
+    const birthdayCheck = today > new Date(birthday);
 
     setEmailValid(emailCheck || email === '');
     setPasswordValid(passwordCheck || password === '');
     setRepPasswordValid(repPasswordCheck || repeatedPassword === '');
+    setNameValid(nameCheck || fullname === '');
+    setPhoneValid(phoneCheck || phonenumber === '');
+    setBirthdayValid(birthdayCheck || birthday === 'dd/mm/yyyy');
 
-    setIsDisabled(!emailCheck || !passwordCheck || !repPasswordCheck);
-  }, [email, password, repeatedPassword]);
+    setIsDisabled(!emailCheck || !passwordCheck || !repPasswordCheck || !nameCheck || !phoneCheck || !birthdayCheck);
+  }, [email, password, repeatedPassword, fullname, phonenumber, birthday]);
 
   const handleSignUp = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (password !== repeatedPassword) {
       return await presentAlert({ header: t('authentication.signUpFailed'), message: t('authentication.passwordMustMatch'), buttons: ['OK'] });
     }
+    let tempPhone = phonenumber;
+    if (!phonenumber.includes('+45' || '0045')) {
+      tempPhone = '+45' + tempPhone;
+    }
     await present({ message: t('authentication.creatingUser') });
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          email,
+          fullname,
+          phonenumber: tempPhone,
+          birthday,
+        }
+      } });
     if (data.user) {
+      console.log(data.user);
       setAuthUser(data.user);
       await dismiss();
       await presentAlert({ header: t('authentication.signUpSuccessful'), buttons: ['OK'] });
@@ -157,6 +198,26 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ togglePasswordButtonType = 
         </IonItem>
 
         <IonText className={`text-red-500 ${repPasswordValid && 'opacity-0'}`}>{t('authentication.passwordMustMatch')}</IonText>
+        
+        <IonItem lines="none" color={'white-background'} className={`border ${nameValid ? 'border-grey-text' : 'border-red-300'}`}>
+          <IonInput value={fullname} placeholder={t('authentication.fullname')} onIonChange={(e) => setFullname(e.detail.value ?? '')} type="text" required class="h-[59px] items-center" />
+        </IonItem>
+
+        <IonText className={`text-red-500 ${nameValid && 'opacity-0'}`}>{t('authentication.nameMustBeFullName')}</IonText>
+
+        <IonItem lines="none" color={'white-background'} className={`border ${phoneValid ? 'border-grey-text' : 'border-red-300'}`}>
+          <IonInput value={ phonenumber } placeholder={t('authentication.phonenumber')} onIonChange={(e) => setPhonenumber(e.detail.value ?? '')} type="tel" required class="h-[59px] items-center" />
+          <IonIcon icon={phonePortrait} size="medium" className="text-primary-brand" />
+        </IonItem>
+
+        <IonText className={`text-red-500 ${phoneValid && 'opacity-0'}`}>{t('authentication.phone8NumbersNoSpaces')}</IonText>
+
+        <IonItem lines="none" color={'white-background'} className={`border ${birthdayValid ? 'border-grey-text' : 'border-red-300'}`}>
+          <IonInput id="myDate" placeholder="HTML Placeholder" onIonChange={(e) => setBirthday(e.detail.value ?? '')} type='date' required class="h-[59px] items-center" />
+          <IonIcon icon={calendar} size="medium" className="text-primary-brand" />
+        </IonItem>
+
+        <IonText className={`${birthdayValid ? 'text-gray-500' : 'text-red-500'}`}>{birthdayValid ? t('authentication.enterBirthday') : t('authentication.birthdayAgeNotValid')}</IonText>
 
         <IonButton expand="full" className="w-full mb-2" onClick={handleSignUp} disabled={isDisabled}>
           {t('authentication.signUp')}

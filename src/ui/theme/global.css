@@ -45,3 +45,11 @@ p {
     @apply text-base md:text-lg;
     color: #0e0e0e;
 }
+
+input[type="date"]:empty {
+    color:grey;
+}
+
+input[type="date"]:valid {
+    color:#0e0e0e;
+}
