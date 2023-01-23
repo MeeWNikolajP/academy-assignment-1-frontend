@@ -45,7 +45,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
       .select()
       .eq('id', data.user.id)
       .single();
-      console.log(fetchSpecificUser);
       if(fetchSpecificUser.data !== null){
         setLoggedInUser(fetchSpecificUser.data);
       }

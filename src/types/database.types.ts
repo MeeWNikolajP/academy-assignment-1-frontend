@@ -13,7 +13,7 @@ export interface Database {
         Row: {
           birthday: string | null
           created_at: string | null
-          email: string | null
+          email: string
           fullname: string | null
           id: string
           phonenumber: string | null
@@ -21,7 +21,7 @@ export interface Database {
         Insert: {
           birthday?: string | null
           created_at?: string | null
-          email?: string | null
+          email: string
           fullname?: string | null
           id: string
           phonenumber?: string | null
@@ -29,7 +29,7 @@ export interface Database {
         Update: {
           birthday?: string | null
           created_at?: string | null
-          email?: string | null
+          email?: string
           fullname?: string | null
           id?: string
           phonenumber?: string | null
