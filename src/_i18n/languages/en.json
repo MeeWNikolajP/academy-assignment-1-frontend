@@ -38,6 +38,7 @@
     "sendingEmail": "Sending email...",
     "resetLinkSent": "Reset link sent",
     "ifAccountExists": "If an account exists, a password reset link has been sent.",
-    "sendResetLink": "Send reset link"
+    "sendResetLink": "Send reset link",
+    "emailChangeRequestSuccess": "Change Link sent, can take up to 10 minutes to appear in your inbox"
   }
 }

@@ -1,8 +1,9 @@
-import { IonButton, IonCol, IonIcon, IonRow, IonItem, IonInput } from '@ionic/react';
+import { IonButton, IonCol, IonIcon, IonRow, IonItem, IonInput, IonText } from '@ionic/react';
 import { supabase } from 'apis/supabaseClient';
 import { personOutline, mail, call, calendar } from 'ionicons/icons';
 import { useState } from 'react';
 import { useloggedInUserStore } from 'store/loggedInUser';
+import { t } from 'i18next';
 
 const ProfilePage: React.FC = () => {
   // Hook for getting isLoggedInUser from the store.
@@ -13,7 +14,8 @@ const ProfilePage: React.FC = () => {
   const [email, setEmail] = useState<string | undefined>(loggedInUser?.email);
   const [phonenumber, setPhonenumber] = useState<string | null | undefined>(loggedInUser?.phonenumber);
   const [birthday, setBirthday] = useState<string | null | undefined>(loggedInUser?.birthday);
-  const [editingMode, setEditingMode] = useState(false);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [editingMode, setEditingMode] = useState<boolean>(false);
 
   const handleUpDate = async () => {
     const { data, error } = await supabase
@@ -30,6 +32,7 @@ const ProfilePage: React.FC = () => {
     if (error) {
       console.log(error);
       setEditingMode(false);
+      setIsSaved(false);
     }
 
     if (data) {
@@ -37,6 +40,7 @@ const ProfilePage: React.FC = () => {
       if (fetchSpecificUser.data !== null) {
         setLoggedInUser(fetchSpecificUser.data);
         /* Requires email confirmation on newly set email (cannot be disabled) */
+        console.log(email);
         await supabase.auth.updateUser({
           email,
         });
@@ -46,7 +50,10 @@ const ProfilePage: React.FC = () => {
 
   const updateAndChangeState = async () => {
     setEditingMode(!editingMode);
-    handleUpDate();
+    if (editingMode === true) {
+      handleUpDate();
+      setIsSaved(true);
+    }
   };
 
   return (
@@ -119,6 +126,9 @@ const ProfilePage: React.FC = () => {
               </IonButton>
             </div>
           </div>
+          <IonText className={`justify-center text-center flex text-red-500 ${!isSaved && 'opacity-0'}`}>
+            {t('authentication.emailChangeRequestSuccess')}
+          </IonText>
         </IonCol>
       </IonRow>
     </>
