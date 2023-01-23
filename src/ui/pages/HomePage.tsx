@@ -10,16 +10,15 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
-  IonMenu,
   IonMenuButton,
   IonPage,
-  IonTitle,
   IonToolbar,
-  IonItem,
   IonButton,
   useIonRouter,
 } from '@ionic/react';
-import { peopleOutline, ticketOutline, walletOutline, cameraOutline } from 'ionicons/icons';
+import { peopleOutline, walletOutline, cameraOutline, personOutline } from 'ionicons/icons';
+import { t } from 'i18next';
+
 
 import Tab1 from './tabs/tab-1/Tab1';
 import Tab2 from './tabs/tab-2/Tab2';
@@ -27,11 +26,13 @@ import Tab3 from './tabs/tab-3/Tab3';
 import Tab4 from './tabs/tab-4/Tab4';
 import { supabase } from 'apis/supabaseClient';
 import { useAuthUserStore } from 'store/user';
+import { useloggedInUserStore } from 'store/loggedInUser';
 
 const HomePage: React.FC = () => {
   const router = useIonRouter();
   const authUser = useAuthUserStore((state) => state.authUser);
   const resetAuthUser = useAuthUserStore((state) => state.resetAuthUser);
+  const resetLoggedInUser = useloggedInUserStore((state) => state.resetloggedInUser);
 
   useEffect(() => {
     if (!authUser) router.push('/login');
@@ -39,6 +40,7 @@ const HomePage: React.FC = () => {
 
   const handleLogOut = async () => {
     resetAuthUser();
+    resetLoggedInUser();
     await supabase.auth.signOut();
     router.push('/login');
   };
@@ -48,7 +50,7 @@ const HomePage: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButton onClick={handleLogOut} slot="end">
-            Log ud
+          {t('authentication.signOut')}
           </IonButton>
           <IonButtons slot="start">
             <IonMenuButton />
@@ -96,14 +98,14 @@ const pages = [
   },
   {
     name: 'people',
-    icon: peopleOutline,
+    icon: personOutline,
     path: '/tab2',
     component: Tab2,
     redirect: false,
   },
   {
     name: 'ticket',
-    icon: ticketOutline,
+    icon: peopleOutline,
     path: '/tab3',
     component: Tab3,
     redirect: false,

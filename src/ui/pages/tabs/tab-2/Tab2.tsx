@@ -1,9 +1,11 @@
 import React from 'react';
-import { IonContent, IonTitle } from '@ionic/react';
+import { IonContent, IonPage } from '@ionic/react';
+import ProfilePage from 'ui/components/frontpage/profile-page/ProfilePage';
+import { Users } from 'types/profilePageInfo';
 
 const Tab2: React.FC = () => (
-  <IonContent color={'white-background'}>
-    <IonTitle>Tab2</IonTitle>
+  <IonContent>
+    <ProfilePage />
   </IonContent>
 );
 

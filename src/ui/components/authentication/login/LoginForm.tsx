@@ -7,6 +7,7 @@ import SocialLoginButton from '../social-login-buttons/SocialLoginButton';
 import { Provider } from '@supabase/supabase-js';
 import Separator from 'ui/components/generic/Separator';
 import { t } from 'i18next';
+import { useloggedInUserStore } from 'store/loggedInUser';
 
 type LoginFormProps = {
   togglePasswordButtonType?: 'text' | 'icon' | 'none';
@@ -23,6 +24,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
   const [presentAlert] = useIonAlert();
 
   const setAuthUser = useAuthUserStore((state) => state.setAuthUser);
+  const setLoggedInUser = useloggedInUserStore((state) => state.setloggedInUser);
+
 
   useEffect(() => {
     setIsSubmitDisabled(!(email.includes('@') && password !== ''));
@@ -37,6 +40,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
 
     if (data.user && data.user.aud === 'authenticated') {
       setAuthUser(data.user);
+      const fetchSpecificUser = await supabase
+      .from('users')
+      .select()
+      .eq('id', data.user.id)
+      .single();
+      console.log(fetchSpecificUser);
+      if(fetchSpecificUser.data !== null){
+        setLoggedInUser(fetchSpecificUser.data);
+      }
       await dismiss();
       router.push('/home');
     } else {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { IonButton, IonIcon, IonInput, IonItem, IonText, useIonRouter, useIonLoading, useIonAlert } from '@ionic/react';
 import { supabase } from 'apis/supabaseClient';
@@ -35,7 +35,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ togglePasswordButtonType = 
   const [nameValid, setNameValid] = useState<boolean>(true);
   const [phoneValid, setPhoneValid] = useState<boolean>(true);
   const [birthdayValid, setBirthdayValid] = useState<boolean>(true);
-  const [birthdayEntered, setBirthdayEntered] = useState<boolean>(true);
 
   useEffect(() => {
     const emailRegex =
