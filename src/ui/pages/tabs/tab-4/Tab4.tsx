@@ -1,11 +1,11 @@
 import React from 'react';
 import './tab-4.module.css';
-import { IonContent, IonTitle } from '@ionic/react';
-
+import { IonContent } from '@ionic/react';
+import WorkPage from 'ui/components/frontpage/work-page/WorkPage';
 const Tab4: React.FC = () => {
   return (
     <IonContent color={'white-background'}>
-      <IonTitle>Tab4</IonTitle>
+      <WorkPage />
     </IonContent>
   );
 };

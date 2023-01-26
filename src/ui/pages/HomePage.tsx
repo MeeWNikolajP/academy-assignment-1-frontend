@@ -16,9 +16,8 @@ import {
   IonButton,
   useIonRouter,
 } from '@ionic/react';
-import { peopleOutline, walletOutline, cameraOutline, personOutline } from 'ionicons/icons';
+import { peopleOutline, cogOutline, cameraOutline, personOutline } from 'ionicons/icons';
 import { t } from 'i18next';
-
 
 import Tab1 from './tabs/tab-1/Tab1';
 import Tab2 from './tabs/tab-2/Tab2';
@@ -50,7 +49,7 @@ const HomePage: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButton onClick={handleLogOut} slot="end">
-          {t('authentication.signOut')}
+            {t('authentication.signOut')}
           </IonButton>
           <IonButtons slot="start">
             <IonMenuButton />
@@ -112,7 +111,7 @@ const pages = [
   },
   {
     name: 'wallet',
-    icon: walletOutline,
+    icon: cogOutline,
     path: '/tab4',
     component: Tab4,
     redirect: false,
