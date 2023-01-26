@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { IonButton, IonIcon, IonInput, IonItem, IonText, useIonRouter, useIonLoading, useIonAlert } from '@ionic/react';
 import { at, eyeOffOutline, eyeOutline, lockClosedOutline } from 'ionicons/icons';
 import { useAuthUserStore } from 'store/user';
+import { useloggedInUserStore } from 'store/loggedInUser';
 import { supabase } from 'apis/supabaseClient';
 import SocialLoginButton from '../social-login-buttons/SocialLoginButton';
 import { Provider } from '@supabase/supabase-js';
 import Separator from 'ui/components/generic/Separator';
 import { t } from 'i18next';
-import { useloggedInUserStore } from 'store/loggedInUser';
 
 type LoginFormProps = {
   togglePasswordButtonType?: 'text' | 'icon' | 'none';
@@ -26,7 +26,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
   const setAuthUser = useAuthUserStore((state) => state.setAuthUser);
   const setLoggedInUser = useloggedInUserStore((state) => state.setloggedInUser);
 
-
   useEffect(() => {
     setIsSubmitDisabled(!(email.includes('@') && password !== ''));
   }, [email, password]);
@@ -40,12 +39,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
 
     if (data.user && data.user.aud === 'authenticated') {
       setAuthUser(data.user);
-      const fetchSpecificUser = await supabase
-      .from('users')
-      .select()
-      .eq('id', data.user.id)
-      .single();
-      if(fetchSpecificUser.data !== null){
+      const fetchSpecificUser = await supabase.from('profile').select().eq('id', data.user.id).single();
+      if (fetchSpecificUser.data !== null) {
         setLoggedInUser(fetchSpecificUser.data);
       }
       await dismiss();
@@ -90,7 +85,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ togglePasswordButtonType = 'icon'
       <form className="sm:w-[400px] w-3/4" onSubmit={handleLogin}>
         <IonText className="text-primary-brand text-xl font-extrabold">{t('authentication.login')}</IonText>
         <IonItem lines="none" color={'white-background'} class="border border-grey-text mt-8">
-          <IonInput value={email} placeholder={t('authentication.email')} onIonChange={(e) => setEmail(e.detail.value ?? '')} type="email" required class="h-[59px] items-center" />
+          <IonInput
+            value={email}
+            placeholder={t('authentication.email')}
+            onIonChange={(e) => setEmail(e.detail.value ?? '')}
+            type="email"
+            required
+            class="h-[59px] items-center"
+          />
           <IonIcon icon={at} size="medium" className="text-primary-brand" />
         </IonItem>
 

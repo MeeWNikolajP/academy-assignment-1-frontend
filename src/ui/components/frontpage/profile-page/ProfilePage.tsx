@@ -10,16 +10,16 @@ const ProfilePage: React.FC = () => {
   const loggedInUser = useloggedInUserStore((state) => state.loggedInUser);
   const setLoggedInUser = useloggedInUserStore((state) => state.setloggedInUser);
 
-  const [fullname, setFullname] = useState<string | null | undefined>(loggedInUser?.fullname);
+  const [fullname, setFullname] = useState<string | undefined>(loggedInUser?.fullname);
   const [email, setEmail] = useState<string | undefined>(loggedInUser?.email);
-  const [phonenumber, setPhonenumber] = useState<string | null | undefined>(loggedInUser?.phonenumber);
-  const [birthday, setBirthday] = useState<string | null | undefined>(loggedInUser?.birthday);
+  const [phonenumber, setPhonenumber] = useState<string | undefined>(loggedInUser?.phonenumber);
+  const [birthday, setBirthday] = useState<string | undefined>(loggedInUser?.birthday);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [editingMode, setEditingMode] = useState<boolean>(false);
 
   const handleUpDate = async () => {
     const { data, error } = await supabase
-      .from('users')
+      .from('profile')
       .update({
         fullname: fullname,
         email: email,
@@ -36,7 +36,7 @@ const ProfilePage: React.FC = () => {
     }
 
     if (data) {
-      const fetchSpecificUser = await supabase.from('users').select().eq('id', loggedInUser?.id).single();
+      const fetchSpecificUser = await supabase.from('profile').select().eq('id', loggedInUser?.id).single();
       if (fetchSpecificUser.data !== null) {
         setLoggedInUser(fetchSpecificUser.data);
         /* Requires email confirmation on newly set email (cannot be disabled) */

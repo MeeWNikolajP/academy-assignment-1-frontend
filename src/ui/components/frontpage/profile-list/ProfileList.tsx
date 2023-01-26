@@ -7,7 +7,7 @@ const ProfileList: React.FC = () => {
   const [users, setUsers] = useState<Users[] | null>([]);
 
   const getUsers = async () => {
-    const { error, data } = await supabase.from('users').select();
+    const { error, data } = await supabase.from('profile').select();
 
     if (data) {
       setUsers(data);
